@@ -3,41 +3,15 @@ import tkinter as tk
 import random
 
 from polish_word_list import words
+from UDPComms import Publisher, Subscriber
 
-SIDE = 100
+PORT = 9381
+
 
 BOMB = "#2C3531"
 BLUE = "#4056A1"
 RED = "#F13C20"
 NEUTRAL = "#EFE2BA"
-
-wordz = '''
-244
-23
-42
-317
-227
-320
-196
-98
-360
-374
-31
-334
-299
-347
-185
-184
-157
-205
-268
-18
-352
-257
-359
-276
-240
-'''
 
 class Window:
     def __init__(self):
@@ -59,14 +33,39 @@ class Window:
 
                 def callback(event, wi=w):
                     wi.config(state=tk.DISABLED)
+                    print(wi.state)
 
                 w.bind("<Button-1>", callback)
 
+        self.new_client = tk.Button(self.root, text="New game")
+        self.new_client.grid( row=5, column = 1)
+        self.new_server = tk.Button(self.root, text="New game as Codemaster")
+        self.new_server.grid( row=5, column = 3)
+
         self.root.mainloop()
 
-    def randomize(self):
-        bomb = random.choice( range(25) )
 
+    def new_game(self):
+        pass
+        self.sub = Subscriber(PORT)
+
+    def new_codemaster(self):
+        self.randomize()
+        self.mode = "server"
+        self.pub = Publisher(PORT)
+
+    def randomize(self):
+        self.words = []
+        for _ in range(25):
+            while 1:
+                cand = random.choice( range( len(words) ) )
+                if cand not in self.words:
+                    break
+            self.words.append(cand)
+
+        self.state = [False] * 25
+
+        bomb = random.choice( range(25) )
         self.master[ bomb ] = BOMB
 
         for _ in range(9):
