@@ -21,7 +21,7 @@ class Window:
         self.connection = None
 
         self.master = [0]*25
-        self.words = [None] *25
+        self.words = []
         self.state = [False]*25
 
         self.widgets = [ [None]*5 for _ in range(5) ]
@@ -35,8 +35,7 @@ class Window:
                                               pady = 60, padx = 10, bg = SECRET, bd = 2 )
                 self.widgets[x][y].grid(row=x, column=y, sticky = 'nsew', padx = 2, pady = 2)
 
-                def callback(event, coords=(x,y) ):
-                    ind = x * 5 + y
+                def callback(event, ind=(x*5 +y) ):
                     if self.mode == 's':
                         self.state[ind] = not self.state[ind]
 
@@ -101,17 +100,18 @@ class Window:
 
         self.root.after(RATE, self.update)
 
-
     def randomize(self):
         self.words = []
+        self.master = [0]*25
+        self.state = [False]*25
+
         for _ in range(25):
             while 1:
                 cand = random.choice( range( len(words) ) )
                 if cand not in self.words:
+                    self.words.append(cand)
                     break
-            self.words.append(cand)
 
-        self.state = [False] * 25
 
         bomb = random.choice( range(25) )
         self.master[ bomb ] = BOMB
