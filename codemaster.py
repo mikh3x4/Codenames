@@ -7,52 +7,100 @@ from UDPComms import Publisher, Subscriber
 
 PORT = 9381
 
-
 BOMB = "#2C3531"
 BLUE = "#4056A1"
 RED = "#F13C20"
 NEUTRAL = "#EFE2BA"
+SECRET = "#EEEEEE"
+
+RATE = 100
 
 class Window:
     def __init__(self):
         self.root = tk.Tk()
-        self.word_list = list(map(int, wordz.strip().split('\n')))
+        self.connection = None
 
         self.master = [0]*25
+        self.words = [None] *25
+        self.state = [False]*25
+
+        self.widgets = [ [None]*5 for _ in range(5) ]
+        self.mode = None
+
+        for x in range(5):
+            for y in range(5):
+
+                self.widgets[x][y] = tk.Label(self.root, 
+                                              text="Place holder",font=("Courier", 44),
+                                              pady = 60, padx = 10, bg = SECRET, bd = 2 )
+                self.widgets[x][y].grid(row=x, column=y, sticky = 'nsew', padx = 2, pady = 2)
+
+                def callback(event, coords=(x,y) ):
+                    ind = x * 5 + y
+                    if self.mode == 's':
+                        self.state[ind] = not self.state[ind]
+
+                self.widgets[x][y].bind("<Button-1>", callback)
+
+        self.new_client = tk.Button(self.root, text="New game", 
+                                               command = self.new_game)
+        self.new_client.grid( row=5, column = 1)
+
+        self.new_server = tk.Button(self.root, text="New game as Codemaster", 
+                                               command = self.new_codemaster)
+        self.new_server.grid( row=5, column = 3)
+
+
+        self.root.mainloop()
+
+    def new_game(self):
+        self.mode = None
+        del self.connection
+        self.connection = Subscriber(PORT)
+
+        self.mode = "c"
+        self.root.after(RATE, self.update)
+
+    def new_codemaster(self):
+        self.mode = None
+        del self.connection
+        self.connection = Publisher(PORT)
+
         self.randomize()
+        self.mode = "s"
+        self.root.after(RATE, self.update)
+
+    def update(self):
+        if self.mode == 's':
+            self.connection.send( [ self.words, self.master, self.state] )
+        elif self.mode == 'c':
+            self.words, self.master, self.state = self.connection.get()
+        else:
+            return
 
         for x in range(5):
             for y in range(5):
                 ind = x * 5 + y
-                color = self.master[ind]
-                ind = self.word_list[ind]
-                word = words.pop(ind)
-                w = tk.Label(self.root, text=word,font=("Courier", 44),
-                            pady = 60, padx = 10, bg = color, bd =2 )
-                w.grid(row=x, column=y, sticky = 'nsew', padx = 2, pady = 2)
+                self.widgets[x][y].config(text = words[self.words[ind]] )
 
-                def callback(event, wi=w):
-                    wi.config(state=tk.DISABLED)
-                    print(wi.state)
+                if self.mode == 's':
+                    if self.state[ind]:
+                        self.widgets[x][y].config(state= tk.DISABLED)
+                    else:
+                        self.widgets[x][y].config(state= tk.NORMAL)
 
-                w.bind("<Button-1>", callback)
+                    self.widgets[x][y].config(bg= self.master[ind])
 
-        self.new_client = tk.Button(self.root, text="New game")
-        self.new_client.grid( row=5, column = 1)
-        self.new_server = tk.Button(self.root, text="New game as Codemaster")
-        self.new_server.grid( row=5, column = 3)
+                elif self.mode == 'c':
+                    if self.state[ind]:
+                        self.widgets[x][y].config(state= tk.DISABLED)
+                        self.widgets[x][y].config(bg= self.master[ind])
+                    else:
+                        self.widgets[x][y].config(state= tk.NORMAL)
+                        self.widgets[x][y].config(bg= SECRET )
 
-        self.root.mainloop()
+        self.root.after(RATE, self.update)
 
-
-    def new_game(self):
-        pass
-        self.sub = Subscriber(PORT)
-
-    def new_codemaster(self):
-        self.randomize()
-        self.mode = "server"
-        self.pub = Publisher(PORT)
 
     def randomize(self):
         self.words = []
