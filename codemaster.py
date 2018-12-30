@@ -1,5 +1,6 @@
 
 import Tkinter as tk
+import tkMessageBox
 import random
 
 from polish_word_list import words
@@ -19,6 +20,7 @@ class Window:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Codenames po Polsku")
+        self.root.report_callback_exception = self.handle_exception
 
         self.connection = None
 
@@ -135,6 +137,9 @@ class Window:
         for cand in range(25):
             if self.master[cand] == 0:
                 self.master[cand] = NEUTRAL
+
+    def handle_exception(self, exc, val, tb):
+        tkMessageBox.showerror("Error", message=str(val))
 
 
 
