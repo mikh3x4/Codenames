@@ -1,5 +1,5 @@
 
-import tkinter as tk
+import Tkinter as tk
 import random
 
 from polish_word_list import words
@@ -18,6 +18,8 @@ RATE = 100
 class Window:
     def __init__(self):
         self.root = tk.Tk()
+        self.root.title("Codenames po Polsku")
+
         self.connection = None
 
         self.master = [0]*25
@@ -31,8 +33,8 @@ class Window:
             for y in range(5):
 
                 self.widgets[x][y] = tk.Label(self.root, 
-                                              text="Place holder",font=("Courier", 44),
-                                              pady = 60, padx = 10, bg = SECRET, bd = 2 )
+                                              text="Place holder",font=("Courier", 36),
+                                              pady = 30, padx = 10, bg = SECRET, bd = 2 )
                 self.widgets[x][y].grid(row=x, column=y, sticky = 'nsew', padx = 2, pady = 2)
 
                 def callback(event, ind=(x*5 +y) ):
@@ -55,7 +57,7 @@ class Window:
     def new_game(self):
         self.mode = None
         del self.connection
-        self.connection = Subscriber(PORT)
+        self.connection = Subscriber(PORT, timeout = 60)
 
         self.mode = "c"
         self.root.after(RATE, self.update)
