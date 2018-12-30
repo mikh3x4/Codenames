@@ -20,7 +20,7 @@ RATE = 100
 class Window:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Codenames po Polsku")
+        self.root.title("Codenames")
         self.root.report_callback_exception = self.handle_exception
 
         self.connection = None
