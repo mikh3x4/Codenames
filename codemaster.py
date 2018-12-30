@@ -3,7 +3,8 @@ import Tkinter as tk
 import tkMessageBox
 import random
 
-from polish_word_list import words
+# from polish_word_list import words
+from english_word_list import words
 from UDPComms import Publisher, Subscriber
 
 PORT = 9381
