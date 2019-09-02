@@ -16,4 +16,4 @@ Install the [Platypus](https://sveinbjorn.org/platypus) command line tools and j
 
 ## Languages
 
-By defualt the game is in english but it also comes with polish language cards (The were translated using google translate :P). To run the game using the polish cards.
+By defualt the game is in english but it also comes with polish language cards (The were translated using google translate :P). To run the game using the polish cards change the import statement at the top of `codemaster.py`. Alternately just download the polish zip
